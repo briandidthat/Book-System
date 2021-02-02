@@ -1,0 +1,13 @@
+package com.organicautonomy.reviewqueue;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class ReviewQueueApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
