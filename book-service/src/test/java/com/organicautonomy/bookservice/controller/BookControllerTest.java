@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -55,6 +56,21 @@ class BookControllerTest {
 
         this.mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testCreateBook() throws Exception {
+        String inputJson = mapper.writeValueAsString(TO_SAVE);
+        String outputJson = mapper.writeValueAsString(HOLES);
+
+        when(repository.save(TO_SAVE)).thenReturn(HOLES);
+
+        this.mockMvc.perform(post("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isCreated())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
     }
