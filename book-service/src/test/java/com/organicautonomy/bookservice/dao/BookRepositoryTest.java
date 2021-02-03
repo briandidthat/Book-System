@@ -52,4 +52,12 @@ class BookRepositoryTest {
 
         assertEquals(fromRepository, thePrince);
     }
+
+    @Test
+    void findBooksByAuthor() {
+        holes = repository.save(holes);
+        List<Book> books = repository.findBooksByAuthor(holes.getAuthor());
+
+        assertEquals(1, books.size());
+    }
 }
