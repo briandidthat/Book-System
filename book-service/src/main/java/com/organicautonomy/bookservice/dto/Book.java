@@ -16,6 +16,7 @@ public class Book {
     @NotNull
     private String author;
     @NotNull
+    @Column(columnDefinition = "DATE")
     private LocalDate releaseDate;
 
     public Book() {
