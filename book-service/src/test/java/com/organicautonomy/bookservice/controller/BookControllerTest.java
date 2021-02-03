@@ -100,4 +100,19 @@ class BookControllerTest {
                 .andExpect(content().json(outputJson))
                 .andDo(print());
     }
+
+    @Test
+    void testGetBooksByAuthor() throws Exception {
+        List<Book> books = new ArrayList<>();
+        books.add(THE_PRINCE);
+
+        when(repository.findBooksByAuthor(THE_PRINCE.getAuthor())).thenReturn(books);
+
+        String outputJson = mapper.writeValueAsString(books);
+
+        this.mockMvc.perform(get("/books/authors/" + THE_PRINCE.getAuthor()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
 }
