@@ -21,13 +21,12 @@ class ReviewRepositoryTest {
     private ReviewRepository repository;
     private Review review1, review2;
 
-
     @BeforeEach
     void setUp() {
         repository.deleteAll();
 
-        review1 = new Review(1, new BigDecimal("3.10"), "It was decent. Not necessarily my fav tho.");
-        review2 = new Review(2, new BigDecimal("4.10"), "Great book.");
+        review1 = new Review(1, 1, new BigDecimal("3.10"), "It was decent. Not necessarily my fav tho.");
+        review2 = new Review(2, 2, new BigDecimal("4.10"), "Great book.");
     }
 
     @Test
@@ -45,6 +44,15 @@ class ReviewRepositoryTest {
 
         assertEquals(1, reviews.size());
     }
+
+    @Test
+    void testFindReviewsByBookId() {
+        review1 = repository.save(review1);
+        List<Review> reviews = repository.findReviewsByBookId(review1.getBookId());
+
+        assertEquals(1, reviews.size());
+    }
+
 
     @Test
     void testFindReviewsByRating() {
