@@ -74,4 +74,16 @@ class BookControllerTest {
                 .andExpect(content().json(outputJson))
                 .andDo(print());
     }
+
+    @Test
+    void testGetBookByTitle() throws Exception {
+        String outputJson = mapper.writeValueAsString(THE_PRINCE);
+
+        when(repository.findBookByTitle(THE_PRINCE.getTitle())).thenReturn(THE_PRINCE);
+
+        this.mockMvc.perform(get("/books/title/" + THE_PRINCE.getTitle()))
+                .andExpect(content().json(outputJson))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }

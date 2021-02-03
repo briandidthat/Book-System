@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/books")
@@ -27,4 +28,13 @@ public class BookController {
         return repository.save(book);
     }
 
+    @GetMapping("/title/{title}")
+    @ResponseStatus(HttpStatus.OK)
+    public Book getBookByTitle(@PathVariable String title) {
+        Book book = repository.findBookByTitle(title);
+
+        if (book == null) throw new NoSuchElementException();
+
+        return book;
+    }
 }
