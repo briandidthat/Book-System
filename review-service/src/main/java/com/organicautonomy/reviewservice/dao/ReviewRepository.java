@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findReviewsByUserId(int userId);
-    @Query("SELECT * FROM review WHERE rating > ?1")
+    @Query(value = "SELECT * FROM review WHERE rating > ?1", nativeQuery = true)
     List<Review> findReviewsByRating(BigDecimal rating);
 }
