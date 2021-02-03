@@ -16,6 +16,8 @@ public class Review {
     @NotNull
     private Integer userId;
     @NotNull
+    private Integer bookId;
+    @NotNull
     @DecimalMin(value = "0", message = "Value cannot be less than 0.")
     @DecimalMax(value = "5", message = "Value cannot be greater than 5.")
     @Column(precision = 7, scale = 2)
@@ -26,19 +28,29 @@ public class Review {
     public Review() {
     }
 
-    public Review(@NotNull Integer userId, @NotNull @DecimalMin("0") @DecimalMax("5") BigDecimal rating,
-                  @NotNull String text) {
+    public Review(@NotNull Integer userId, @NotNull Integer bookId,
+                  @NotNull @DecimalMin("0") @DecimalMax("5") BigDecimal rating, @NotNull String text) {
         this.userId = userId;
+        this.bookId = bookId;
         this.rating = rating;
         this.text = text;
     }
 
-    public Review(Integer id, @NotNull Integer userId, @NotNull @DecimalMin("0") @DecimalMax("5") BigDecimal rating,
-                  @NotNull String text) {
+    public Review(Integer id, @NotNull Integer userId, @NotNull Integer bookId,
+                  @NotNull @DecimalMin("0") @DecimalMax("5") BigDecimal rating, @NotNull String text) {
         this.id = id;
         this.userId = userId;
+        this.bookId = bookId;
         this.rating = rating;
         this.text = text;
+    }
+
+    public Integer getBookId() {
+        return bookId;
+    }
+
+    public void setBookId(Integer bookId) {
+        this.bookId = bookId;
     }
 
     public Integer getId() {
@@ -79,11 +91,12 @@ public class Review {
         if (o == null || getClass() != o.getClass()) return false;
         Review review = (Review) o;
         return Objects.equals(id, review.id) && Objects.equals(userId, review.userId)
-                && Objects.equals(rating, review.rating) && Objects.equals(text, review.text);
+                && Objects.equals(bookId, review.bookId) && Objects.equals(rating, review.rating)
+                && Objects.equals(text, review.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, rating, text);
+        return Objects.hash(id, userId, bookId, rating, text);
     }
 }
