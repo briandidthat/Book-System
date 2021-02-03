@@ -6,7 +6,6 @@ import com.organicautonomy.bookservice.dto.Book;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,13 +13,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +83,36 @@ class BookControllerTest {
         this.mockMvc.perform(get("/books/title/" + THE_PRINCE.getTitle()))
                 .andExpect(content().json(outputJson))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    void testGetBooksByReleaseDate() throws Exception {
+        List<Book> books = new ArrayList<>();
+        books.add(HOLES);
+
+        when(repository.findBooksByReleaseDate(HOLES.getReleaseDate())).thenReturn(books);
+
+        String outputJson = mapper.writeValueAsString(books);
+
+        this.mockMvc.perform(get("/books/date/" + "1998-11-01"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetBooksByAuthor() throws Exception {
+        List<Book> books = new ArrayList<>();
+        books.add(THE_PRINCE);
+
+        when(repository.findBooksByAuthor(THE_PRINCE.getAuthor())).thenReturn(books);
+
+        String outputJson = mapper.writeValueAsString(books);
+
+        this.mockMvc.perform(get("/books/authors/" + THE_PRINCE.getAuthor()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
                 .andDo(print());
     }
 }
