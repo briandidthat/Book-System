@@ -16,8 +16,9 @@ public class Review {
     @NotNull
     private Integer userId;
     @NotNull
-    @DecimalMin("0")
-    @DecimalMax("5")
+    @DecimalMin(value = "0", message = "Value cannot be less than 0.")
+    @DecimalMax(value = "5", message = "Value cannot be greater than 5.")
+    @Column(precision = 7, scale = 2)
     private BigDecimal rating;
     @NotNull
     private String text;

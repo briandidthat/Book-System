@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,13 +26,16 @@ class ReviewRepositoryTest {
     void setUp() {
         repository.deleteAll();
 
-        review1 = new Review(1, new BigDecimal("3.1"), "It was decent. Not necessarily my fav tho.");
-        review2 = new Review(2, new BigDecimal("4.1"), "Great book.");
+        review1 = new Review(1, new BigDecimal("3.10"), "It was decent. Not necessarily my fav tho.");
+        review2 = new Review(2, new BigDecimal("4.10"), "Great book.");
     }
 
     @Test
     void testSaveFindReview() {
         review1 = repository.save(review1);
+        Optional<Review> fromRepository = repository.findById(review1.getId());
+
+        assertEquals(review1, fromRepository.get());
     }
 
     @Test
