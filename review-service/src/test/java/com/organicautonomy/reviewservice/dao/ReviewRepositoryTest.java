@@ -30,6 +30,11 @@ class ReviewRepositoryTest {
     }
 
     @Test
+    void testSaveFindReview() {
+        review1 = repository.save(review1);
+    }
+
+    @Test
     void testFindReviewsByUserId() {
         review1 = repository.save(review1);
         List<Review> reviews = repository.findReviewsByUserId(review1.getUserId());
@@ -39,5 +44,11 @@ class ReviewRepositoryTest {
 
     @Test
     void testFindReviewsByRating() {
+        review1 = repository.save(review1);
+        review2 = repository.save(review2);
+
+        List<Review> reviews = repository.findReviewsByRating(3);
+
+        assertEquals(2, reviews.size());
     }
 }
