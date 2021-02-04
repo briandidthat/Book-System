@@ -21,4 +21,10 @@ public class UserController {
         return repository.findAll();
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@RequestBody @Valid User user) {
+        return repository.save(user);
+    }
+
 }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,7 +37,6 @@ class UserControllerTest {
     @MockBean
     private UserRepository repository;
 
-
     @BeforeEach
     void setUp() {
     }
@@ -55,5 +55,19 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
+    }
+
+    @Test
+    void testCreateUser() throws Exception {
+        String inputJson = mapper.writeValueAsString(TO_SAVE);
+        String outputJson = mapper.writeValueAsString(USER1);
+
+        when(repository.save(TO_SAVE)).thenReturn(USER1);
+
+        this.mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(outputJson));
     }
 }
