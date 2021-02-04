@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,5 +50,15 @@ class UserRepositoryTest {
         User fromRepository = repository.findUserByEmail(user2.getEmail());
 
         assertEquals(user2, fromRepository);
+    }
+
+    @Test
+    void findAllUsers() {
+        user1 = repository.save(user1);
+        user2 = repository.save(user2);
+
+        List<User> users = repository.findAll();
+
+        assertEquals(2, users.size());
     }
 }
