@@ -38,6 +38,14 @@ public class ReviewController {
         return reviews;
     }
 
+    @GetMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Review> getReviewsByUserId(@PathVariable Integer userId) {
+        List<Review> reviews = repository.findReviewsByUserId(userId);
 
+        if (reviews.size() == 0) throw new NoSuchElementException();
+
+        return reviews;
+    }
 
 }
