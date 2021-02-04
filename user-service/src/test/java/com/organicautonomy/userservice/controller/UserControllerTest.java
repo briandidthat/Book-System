@@ -82,4 +82,16 @@ class UserControllerTest {
                 .andExpect(content().json(outputJson))
                 .andDo(print());
     }
+
+    @Test
+    void testGetUserByEmail() throws Exception {
+        String outputJson = mapper.writeValueAsString(USER2);
+
+        when(repository.findUserByEmail(USER2.getEmail())).thenReturn(USER2);
+
+        this.mockMvc.perform(get("/users/email/" + USER2.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
 }

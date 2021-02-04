@@ -38,4 +38,13 @@ public class UserController {
         return user;
     }
 
+    @GetMapping("/email/{email}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUserByEmail(@PathVariable String email) {
+        User user = repository.findUserByEmail(email);
+
+        if (user == null) throw new NoSuchElementException();
+
+        return user;
+    }
 }
