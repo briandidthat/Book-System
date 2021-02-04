@@ -48,4 +48,14 @@ public class ReviewController {
         return reviews;
     }
 
+    @GetMapping("/ratings/{rating}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Review> getReviewsByRating(@PathVariable Integer rating) {
+        List<Review> reviews = repository.findReviewsByRating(rating);
+
+        if (reviews.size() == 0) throw new NoSuchElementException();
+
+        return reviews;
+    }
+
 }

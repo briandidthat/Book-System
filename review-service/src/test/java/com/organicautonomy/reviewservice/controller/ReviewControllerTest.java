@@ -101,4 +101,20 @@ class ReviewControllerTest {
                 .andExpect(content().json(outputJson))
                 .andDo(print());
     }
+
+    @Test
+    void testGetReviewsByRating() throws Exception {
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(REVIEW1);
+        reviews.add(REVIEW2);
+
+        when(repository.findReviewsByRating(3)).thenReturn(reviews);
+
+        String outputJson = mapper.writeValueAsString(reviews);
+
+        this.mockMvc.perform(get("/reviews/ratings/3"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
 }
