@@ -4,11 +4,9 @@ import com.organicautonomy.reviewservice.dao.ReviewRepository;
 import com.organicautonomy.reviewservice.dto.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,6 +19,12 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.OK)
     public List<Review> getAllReviews() {
         return repository.findAll();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Review createReview(@RequestBody @Valid Review review) {
+        return repository.save(review);
     }
 
 }
