@@ -70,4 +70,16 @@ class UserControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().json(outputJson));
     }
+
+    @Test
+    void testGetUserByUsername() throws Exception {
+        String outputJson = mapper.writeValueAsString(USER2);
+
+        when(repository.findUserByUsername(USER2.getUsername())).thenReturn(USER2);
+
+        this.mockMvc.perform(get("/users/username/" + USER2.getUsername()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
 }

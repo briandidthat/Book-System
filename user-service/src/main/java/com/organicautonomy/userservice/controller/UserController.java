@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
@@ -25,6 +26,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@RequestBody @Valid User user) {
         return repository.save(user);
+    }
+
+    @GetMapping("/username/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUserByUsername(@PathVariable String username) {
+        User user = repository.findUserByUsername(username);
+
+        if (user == null) throw new NoSuchElementException();
+
+        return user;
     }
 
 }
