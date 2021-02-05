@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/reviews")
@@ -34,7 +33,9 @@ public class ReviewController {
     public List<Review> getReviewsByBookId(@PathVariable Integer bookId) {
         List<Review> reviews = repository.findReviewsByBookId(bookId);
 
-        if (reviews.size() == 0) throw new NoSuchElementException();
+        if (reviews.size() == 0) {
+            throw new ResourceNotFoundException("There are no books associated with the id provided.");
+        }
 
         return reviews;
     }
@@ -44,7 +45,9 @@ public class ReviewController {
     public List<Review> getReviewsByUserId(@PathVariable Integer userId) {
         List<Review> reviews = repository.findReviewsByUserId(userId);
 
-        if (reviews.size() == 0) throw new ResourceNotFoundException("No reviews associated with the id: " + userId);
+        if (reviews.size() == 0) {
+            throw new ResourceNotFoundException("There are no reviews associated with the user id provided.");
+        }
 
         return reviews;
     }
@@ -54,7 +57,9 @@ public class ReviewController {
     public List<Review> getReviewsByRating(@PathVariable Integer rating) {
         List<Review> reviews = repository.findReviewsByRating(rating);
 
-        if (reviews.size() == 0) throw new ResourceNotFoundException("There are no reviews with that rating.");
+        if (reviews.size() == 0) {
+            throw new ResourceNotFoundException("There are no reviews with the rating provided.");
+        }
 
         return reviews;
     }
