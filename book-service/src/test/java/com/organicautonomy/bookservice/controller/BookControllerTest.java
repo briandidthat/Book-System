@@ -3,6 +3,7 @@ package com.organicautonomy.bookservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.organicautonomy.bookservice.dao.BookRepository;
 import com.organicautonomy.bookservice.dto.Book;
+import com.organicautonomy.bookservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -87,6 +90,18 @@ class BookControllerTest {
     }
 
     @Test
+    void testGetBookByTitleWithInvalidTitle() throws Exception {
+        when(repository.findBookByTitle("INVALID")).thenReturn(null);
+
+        this.mockMvc.perform(get("/books/title/{title}", "INVALID"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no book associated with the title provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetBooksByReleaseDate() throws Exception {
         List<Book> books = new ArrayList<>();
         books.add(HOLES);
@@ -102,6 +117,19 @@ class BookControllerTest {
     }
 
     @Test
+    void testGetBookByTitleWithInvalidReleaseDate() throws Exception {
+        List<Book> books = new ArrayList<>();
+        when(repository.findBooksByReleaseDate(LocalDate.of(2012,1,1))).thenReturn(books);
+
+        this.mockMvc.perform(get("/books/date/{releaseDate}", "2012-01-01"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no books associated with the release date provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetBooksByAuthor() throws Exception {
         List<Book> books = new ArrayList<>();
         books.add(THE_PRINCE);
@@ -113,6 +141,19 @@ class BookControllerTest {
         this.mockMvc.perform(get("/books/authors/" + THE_PRINCE.getAuthor()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetBookByTitleWithInvalidAuthor() throws Exception {
+        List<Book> books = new ArrayList<>();
+        when(repository.findBooksByAuthor("INVALID")).thenReturn(books);
+
+        this.mockMvc.perform(get("/books/authors/{author}", "INVALID"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no books associated with the author provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 }
