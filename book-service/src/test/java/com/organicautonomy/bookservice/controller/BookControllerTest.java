@@ -3,6 +3,7 @@ package com.organicautonomy.bookservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.organicautonomy.bookservice.dao.BookRepository;
 import com.organicautonomy.bookservice.dto.Book;
+import com.organicautonomy.bookservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -83,6 +86,18 @@ class BookControllerTest {
         this.mockMvc.perform(get("/books/title/" + THE_PRINCE.getTitle()))
                 .andExpect(content().json(outputJson))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    void testGetBookByTitleWithInvalidTitle() throws Exception {
+        when(repository.findBookByTitle("INVALID")).thenReturn(null);
+
+        this.mockMvc.perform(get("/books/title/{title}", "INVALID"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no book associated with the title provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 

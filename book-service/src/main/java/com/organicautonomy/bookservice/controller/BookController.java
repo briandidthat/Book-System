@@ -2,6 +2,7 @@ package com.organicautonomy.bookservice.controller;
 
 import com.organicautonomy.bookservice.dao.BookRepository;
 import com.organicautonomy.bookservice.dto.Book;
+import com.organicautonomy.bookservice.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -35,7 +36,9 @@ public class BookController {
     public Book getBookByTitle(@PathVariable String title) {
         Book book = repository.findBookByTitle(title);
 
-        if (book == null) throw new NoSuchElementException();
+        if (book == null) {
+            throw new ResourceNotFoundException("There is no book associated with the title provided.");
+        }
 
         return book;
     }
