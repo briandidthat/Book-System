@@ -92,6 +92,20 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testGetReviewsByRatingWithInvalidBookId() throws Exception {
+        List<Review> reviews = new ArrayList<>();
+
+        when(repository.findReviewsByBookId(2)).thenReturn(reviews);
+
+        this.mockMvc.perform(get("/reviews/books/{bookId}", 2))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no books associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByUserId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW2);
@@ -107,15 +121,16 @@ class ReviewControllerTest {
     }
 
     @Test
-    void testGetReviewsByUserIdWithInvalidUser() throws Exception {
+    void testGetReviewsByUserIdWithInvalidUserId() throws Exception {
         List<Review> reviews = new ArrayList<>();
 
-        when(repository.findReviewsByUserId(REVIEW2.getUserId())).thenReturn(reviews);
+        when(repository.findReviewsByUserId(2)).thenReturn(reviews);
 
-        this.mockMvc.perform(get("/reviews/users/" + REVIEW2.getUserId()))
+        this.mockMvc.perform(get("/reviews/users/{userId}", 2))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("No reviews associated with the id: 2", result.getResolvedException().getMessage()))
+                .andExpect(result -> assertEquals("There are no reviews associated with the user id provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 
@@ -144,7 +159,8 @@ class ReviewControllerTest {
         this.mockMvc.perform(get("/reviews/ratings/{rating}", 2))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("There are no reviews with that rating.", result.getResolvedException().getMessage()))
+                .andExpect(result -> assertEquals("There are no reviews with the rating provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 }
