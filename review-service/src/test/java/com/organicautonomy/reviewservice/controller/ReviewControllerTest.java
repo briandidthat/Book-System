@@ -3,6 +3,7 @@ package com.organicautonomy.reviewservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.organicautonomy.reviewservice.dao.ReviewRepository;
 import com.organicautonomy.reviewservice.dto.Review;
+import com.organicautonomy.reviewservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +18,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ReviewController.class)
 class ReviewControllerTest {
     private final Review TO_SAVE = new Review(1, 1, new BigDecimal("3.10"), "Ehh, not horrible.");
-    private final Review REVIEW1 = new Review(1,1, 1, new BigDecimal("3.10"), "Ehh, not horrible.");
+    private final Review REVIEW1 = new Review(1, 1, 1, new BigDecimal("3.10"), "Ehh, not horrible.");
     private final Review REVIEW2 = new Review(2, 2, 2, new BigDecimal("4.80"), "Great book!");
 
     @Autowired
@@ -103,6 +107,19 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testGetReviewsByUserIdWithInvalidUser() throws Exception {
+        List<Review> reviews = new ArrayList<>();
+
+        when(repository.findReviewsByUserId(REVIEW2.getUserId())).thenReturn(reviews);
+
+        this.mockMvc.perform(get("/reviews/users/" + REVIEW2.getUserId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("No reviews associated with the id: 2", result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByRating() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
@@ -115,6 +132,19 @@ class ReviewControllerTest {
         this.mockMvc.perform(get("/reviews/ratings/3"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetReviewsByRatingWithInvalidRating() throws Exception {
+        List<Review> reviews = new ArrayList<>();
+
+        when(repository.findReviewsByRating(2)).thenReturn(reviews);
+
+        this.mockMvc.perform(get("/reviews/ratings/{rating}", 2))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews with that rating.", result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 }
