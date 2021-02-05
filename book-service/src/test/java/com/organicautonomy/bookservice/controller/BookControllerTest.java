@@ -117,6 +117,19 @@ class BookControllerTest {
     }
 
     @Test
+    void testGetBookByTitleWithInvalidReleaseDate() throws Exception {
+        List<Book> books = new ArrayList<>();
+        when(repository.findBooksByReleaseDate(LocalDate.of(2012,1,1))).thenReturn(books);
+
+        this.mockMvc.perform(get("/books/date/{releaseDate}", "2012-01-01"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no books associated with the release date provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetBooksByAuthor() throws Exception {
         List<Book> books = new ArrayList<>();
         books.add(THE_PRINCE);
@@ -128,6 +141,19 @@ class BookControllerTest {
         this.mockMvc.perform(get("/books/authors/" + THE_PRINCE.getAuthor()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetBookByTitleWithInvalidAuthor() throws Exception {
+        List<Book> books = new ArrayList<>();
+        when(repository.findBooksByAuthor("INVALID")).thenReturn(books);
+
+        this.mockMvc.perform(get("/books/authors/{author}", "INVALID"))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no books associated with the author provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 }
