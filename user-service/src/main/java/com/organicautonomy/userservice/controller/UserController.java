@@ -2,13 +2,13 @@ package com.organicautonomy.userservice.controller;
 
 import com.organicautonomy.userservice.dao.UserRepository;
 import com.organicautonomy.userservice.dto.User;
+import com.organicautonomy.userservice.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
@@ -33,7 +33,9 @@ public class UserController {
     public User getUserByUsername(@PathVariable String username) {
         User user = repository.findUserByUsername(username);
 
-        if (user == null) throw new NoSuchElementException();
+        if (user == null) {
+            throw new ResourceNotFoundException("There is no user associated with the username provided.");
+        }
 
         return user;
     }
@@ -43,7 +45,9 @@ public class UserController {
     public User getUserByEmail(@PathVariable String email) {
         User user = repository.findUserByEmail(email);
 
-        if (user == null) throw new NoSuchElementException();
+        if (user == null) {
+            throw new ResourceNotFoundException("There is no user associated with the email provided.");
+        }
 
         return user;
     }

@@ -3,6 +3,7 @@ package com.organicautonomy.userservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.organicautonomy.userservice.dao.UserRepository;
 import com.organicautonomy.userservice.dto.User;
+import com.organicautonomy.userservice.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -77,9 +80,22 @@ class UserControllerTest {
 
         when(repository.findUserByUsername(USER2.getUsername())).thenReturn(USER2);
 
-        this.mockMvc.perform(get("/users/username/" + USER2.getUsername()))
+        this.mockMvc.perform(get("/users/username/{username}", USER2.getUsername()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUserByUsernameWithInvalidUsername() throws Exception {
+        String invalid = "INVALID";
+        when(repository.findUserByUsername(invalid)).thenReturn(null);
+
+        this.mockMvc.perform(get("/users/username/{username}", invalid))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the username provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 
@@ -89,9 +105,22 @@ class UserControllerTest {
 
         when(repository.findUserByEmail(USER2.getEmail())).thenReturn(USER2);
 
-        this.mockMvc.perform(get("/users/email/" + USER2.getEmail()))
+        this.mockMvc.perform(get("/users/email/{email}", USER2.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUserByEmailWithInvalidEmail() throws Exception {
+        String invalid = "INVALID@GMAIL.COM";
+
+        when(repository.findUserByEmail(invalid)).thenReturn(null);
+
+        this.mockMvc.perform(get("/users/email/{email}", invalid))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the email provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 }

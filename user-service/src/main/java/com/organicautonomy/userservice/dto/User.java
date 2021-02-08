@@ -1,6 +1,7 @@
 package com.organicautonomy.userservice.dto;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
@@ -13,6 +14,8 @@ public class User {
     @NotNull
     private String username;
     @NotNull
+    @Email(message = "Invalid email format.")
+    @Column(unique = true, nullable = false)
     private String email;
 
     public User() {
