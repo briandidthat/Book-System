@@ -98,7 +98,7 @@ class BookControllerTest {
 
         when(repository.findBookByTitle(THE_PRINCE.getTitle())).thenReturn(THE_PRINCE);
 
-        this.mockMvc.perform(get("/books/title/" + THE_PRINCE.getTitle()))
+        this.mockMvc.perform(get("/books/title/{title}", THE_PRINCE.getTitle()))
                 .andExpect(content().json(outputJson))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -125,7 +125,7 @@ class BookControllerTest {
 
         String outputJson = mapper.writeValueAsString(books);
 
-        this.mockMvc.perform(get("/books/date/" + "1998-11-01"))
+        this.mockMvc.perform(get("/books/date/{releaseDate}", "1998-11-01"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
@@ -134,7 +134,7 @@ class BookControllerTest {
     @Test
     void testGetBookByTitleWithInvalidReleaseDate() throws Exception {
         List<Book> books = new ArrayList<>();
-        when(repository.findBooksByReleaseDate(LocalDate.of(2012,1,1))).thenReturn(books);
+        when(repository.findBooksByReleaseDate(LocalDate.of(2012, 1, 1))).thenReturn(books);
 
         this.mockMvc.perform(get("/books/date/{releaseDate}", "2012-01-01"))
                 .andExpect(status().isNotFound())
@@ -153,7 +153,7 @@ class BookControllerTest {
 
         String outputJson = mapper.writeValueAsString(books);
 
-        this.mockMvc.perform(get("/books/authors/" + THE_PRINCE.getAuthor()))
+        this.mockMvc.perform(get("/books/authors/{author}", THE_PRINCE.getAuthor()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
