@@ -32,6 +32,7 @@ class UserControllerTest {
     private final User TO_SAVE = new User("brooke", "brooke@gmail.com");
     private final User USER1 = new User(1, "brooke", "brooke@gmail.com");
     private final User USER2 = new User(2, "$GMEtothemoon", "bagholder@gmail.com");
+    private final User INVALID = new User();
 
     @Autowired
     private ObjectMapper mapper;
@@ -72,6 +73,17 @@ class UserControllerTest {
                 .content(inputJson))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(outputJson));
+    }
+
+    @Test
+    void testCreateUserWithInvalidUserFormat() throws Exception {
+        String inputJson = mapper.writeValueAsString(INVALID);
+
+        this.mockMvc.perform(post("/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isUnprocessableEntity())
+                .andDo(print());
     }
 
     @Test
@@ -123,4 +135,5 @@ class UserControllerTest {
                         result.getResolvedException().getMessage()))
                 .andDo(print());
     }
+
 }
