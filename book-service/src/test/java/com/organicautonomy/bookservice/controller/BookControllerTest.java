@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ class BookControllerTest {
     public final Book TO_SAVE = new Book("Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
     public final Book HOLES = new Book(1, "Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
     public final Book THE_PRINCE = new Book("The Prince", "Louis Sachar", LocalDate.of(1999, 12, 1));
+    public final Book INVALID = new Book();
 
     @MockBean
     private BookRepository repository;
@@ -76,6 +78,19 @@ class BookControllerTest {
                 .andExpect(content().json(outputJson))
                 .andDo(print());
     }
+
+    @Test
+    void testCreateBookWithInvalidFormat() throws Exception {
+        String inputJson = mapper.writeValueAsString(INVALID);
+
+        this.mockMvc.perform(post("/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andDo(print());
+    }
+
 
     @Test
     void testGetBookByTitle() throws Exception {
