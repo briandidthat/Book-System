@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ class ReviewControllerTest {
     private final Review TO_SAVE = new Review(1, 1, new BigDecimal("3.10"), "Ehh, not horrible.");
     private final Review REVIEW1 = new Review(1, 1, 1, new BigDecimal("3.10"), "Ehh, not horrible.");
     private final Review REVIEW2 = new Review(2, 2, 2, new BigDecimal("4.80"), "Great book!");
+    private final Review INVALID = new Review();
 
     @Autowired
     private ObjectMapper mapper;
@@ -77,6 +79,18 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testCreateReviewWithInvalidFormat() throws Exception {
+        String inputJson = mapper.writeValueAsString(INVALID);
+
+        this.mockMvc.perform(post("/reviews")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByBookId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
@@ -85,7 +99,7 @@ class ReviewControllerTest {
 
         String outputJson = mapper.writeValueAsString(reviews);
 
-        this.mockMvc.perform(get("/reviews/books/" + REVIEW1.getBookId()))
+        this.mockMvc.perform(get("/reviews/books/{bookId}", REVIEW1.getBookId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
@@ -114,7 +128,7 @@ class ReviewControllerTest {
 
         String outputJson = mapper.writeValueAsString(reviews);
 
-        this.mockMvc.perform(get("/reviews/users/" + REVIEW2.getUserId()))
+        this.mockMvc.perform(get("/reviews/users/{userId}", REVIEW2.getUserId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
@@ -144,7 +158,7 @@ class ReviewControllerTest {
 
         String outputJson = mapper.writeValueAsString(reviews);
 
-        this.mockMvc.perform(get("/reviews/ratings/3"))
+        this.mockMvc.perform(get("/reviews/ratings/{rating}", 3))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
                 .andDo(print());
