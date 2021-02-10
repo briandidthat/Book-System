@@ -171,6 +171,18 @@ class BookControllerTest {
     }
 
     @Test
+    void testDeleteBookWithInvalidId() throws Exception {
+        when(repository.findById(HOLES.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(delete("/books/{bookId}", HOLES.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no book associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetBookByTitle() throws Exception {
         String outputJson = mapper.writeValueAsString(THE_PRINCE);
 
