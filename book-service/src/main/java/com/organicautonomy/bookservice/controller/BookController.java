@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -28,6 +29,30 @@ public class BookController {
     @ResponseStatus(HttpStatus.CREATED)
     public Book createBook(@RequestBody @Valid Book book) {
         return repository.save(book);
+    }
+
+    @GetMapping("/{bookId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Book getBookById(@PathVariable int bookId) {
+        Optional<Book> book = repository.findById(bookId);
+
+        return book.orElseThrow(() -> new ResourceNotFoundException("There is no book associated with the id provided."));
+    }
+
+    @PutMapping("/{bookId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateBook(@PathVariable int bookId, @RequestBody @Valid Book book) {
+        if (book.getId() != bookId) {
+            throw new IllegalArgumentException("The book id in the path must match book object id.");
+        }
+
+        Optional<Book> compare = repository.findById(bookId);
+
+        if (!compare.isPresent()) {
+            throw new ResourceNotFoundException("There is no book associated with the id provided.");
+        }
+        // by this point we have checked that the ids match, and the book object exists in the db.
+        repository.save(book);
     }
 
     @GetMapping("/title/{title}")
@@ -65,4 +90,5 @@ public class BookController {
 
         return books;
     }
+
 }
