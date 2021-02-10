@@ -19,7 +19,7 @@ import java.util.List;
 public class ControllerExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Error> handleResourceNotFoundException(Exception e, WebRequest request) {
+    public ResponseEntity<Error> handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
         return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
     }
