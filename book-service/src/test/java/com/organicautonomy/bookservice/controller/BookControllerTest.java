@@ -144,6 +144,21 @@ class BookControllerTest {
     }
 
     @Test
+    void testUpdateBookWithInvalidPathId() throws Exception {
+        String inputJson = mapper.writeValueAsString(HOLES);
+        when(repository.findById(HOLES.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(put("/books/{bookId}", 3)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("The book id in the path must match book object id.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetBookByTitle() throws Exception {
         String outputJson = mapper.writeValueAsString(THE_PRINCE);
 
