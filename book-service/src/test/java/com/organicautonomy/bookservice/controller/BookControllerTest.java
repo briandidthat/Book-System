@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookControllerTest {
     public final Book TO_SAVE = new Book("Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
     public final Book HOLES = new Book(1, "Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
-    public final Book THE_PRINCE = new Book("The Prince", "Louis Sachar", LocalDate.of(1999, 12, 1));
+    public final Book THE_PRINCE = new Book(2,"The Prince", "Louis Sachar", LocalDate.of(1999, 12, 1));
     public final Book INVALID = new Book();
 
     @MockBean
@@ -88,6 +89,18 @@ class BookControllerTest {
                 .content(inputJson))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetBookById() throws Exception {
+        String outputJson = mapper.writeValueAsString(THE_PRINCE);
+
+        when(repository.findById(THE_PRINCE.getId())).thenReturn(Optional.of(THE_PRINCE));
+
+        this.mockMvc.perform(get("/books/{bookId}", THE_PRINCE.getId()))
+                .andExpect(content().json(outputJson))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 
