@@ -23,8 +23,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -113,6 +112,19 @@ class BookControllerTest {
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
                 .andExpect(result -> assertEquals("There is no book associated with the id provided.",
                         result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testUpdateBook() throws Exception {
+        String inputJson = mapper.writeValueAsString(HOLES);
+        when(repository.findById(HOLES.getId())).thenReturn(Optional.of(HOLES));
+
+        this.mockMvc.perform(put("/books/{bookId}", HOLES.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
                 .andDo(print());
     }
 
