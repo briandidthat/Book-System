@@ -104,6 +104,17 @@ class BookControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void testGetBookByIdWithInvalidId() throws Exception {
+        when(repository.findById(3)).thenReturn(null);
+
+        this.mockMvc.perform(get("/books/{bookId}", THE_PRINCE.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no book associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
 
     @Test
     void testGetBookByTitle() throws Exception {
