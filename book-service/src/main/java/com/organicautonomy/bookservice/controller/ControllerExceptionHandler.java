@@ -24,6 +24,12 @@ public class ControllerExceptionHandler {
         return new ResponseEntity(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Error> outOfRangeException(IllegalArgumentException e, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), request.getDescription(false));
+        return new ResponseEntity(errorDetails, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Error> handleValidationException(MethodArgumentNotValidException e, WebRequest request) {
         BindingResult result = e.getBindingResult();
