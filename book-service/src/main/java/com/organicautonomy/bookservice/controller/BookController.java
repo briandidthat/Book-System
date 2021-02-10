@@ -55,6 +55,18 @@ public class BookController {
         repository.save(book);
     }
 
+    @DeleteMapping("/{bookId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBook(@PathVariable Integer bookId) {
+        Optional<Book> book = repository.findById(bookId);
+
+        if (!book.isPresent()) {
+            throw new ResourceNotFoundException("There is no book associated with the id provided.");
+        }
+
+        repository.delete(book.get());
+    }
+
     @GetMapping("/title/{title}")
     @ResponseStatus(HttpStatus.OK)
     public Book getBookByTitle(@PathVariable String title) {

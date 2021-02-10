@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -155,6 +156,17 @@ class BookControllerTest {
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
                 .andExpect(result -> assertEquals("The book id in the path must match book object id.",
                         result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testDeleteBook() throws Exception {
+        when(repository.findById(HOLES.getId())).thenReturn(Optional.of(HOLES));
+        doNothing().when(repository).delete(HOLES);
+
+        this.mockMvc.perform(delete("/books/{bookId}", HOLES.getId()))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
                 .andDo(print());
     }
 
