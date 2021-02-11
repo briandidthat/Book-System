@@ -168,6 +168,18 @@ class UserControllerTest {
     }
 
     @Test
+    void testDeleteUserWithInvalidId() throws Exception {
+        when(repository.findById(USER2.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(delete("/users/{userId}", USER2.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetUserByUsername() throws Exception {
         String outputJson = mapper.writeValueAsString(USER2);
 
