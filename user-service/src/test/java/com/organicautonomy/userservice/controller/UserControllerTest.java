@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -152,6 +153,17 @@ class UserControllerTest {
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
                 .andExpect(result -> assertEquals("The user id in the path must match user object id in body.",
                         result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testDeleteUser() throws Exception {
+        when(repository.findById(USER1.getId())).thenReturn(Optional.of(USER1));
+        doNothing().when(repository).delete(USER1);
+
+        this.mockMvc.perform(delete("/users/{userId}", USER1.getId()))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
                 .andDo(print());
     }
 

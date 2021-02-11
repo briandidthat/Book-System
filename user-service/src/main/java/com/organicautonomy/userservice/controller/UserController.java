@@ -54,6 +54,18 @@ public class UserController {
         repository.save(user);
     }
 
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Integer userId) {
+        Optional<User> user = repository.findById(userId);
+
+        if (!user.isPresent()) {
+            throw new ResourceNotFoundException("There is no user associated with the id provided.");
+        }
+
+        repository.delete(user.get());
+    }
+
     @GetMapping("/username/{username}")
     @ResponseStatus(HttpStatus.OK)
     public User getUserByUsername(@PathVariable String username) {
