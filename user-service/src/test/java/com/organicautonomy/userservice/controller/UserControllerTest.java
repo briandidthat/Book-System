@@ -125,6 +125,20 @@ class UserControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void testUpdateUserWithInvalidId() throws Exception {
+        String inputJson = mapper.writeValueAsString(USER1);
+        when(repository.findById(USER1.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(put("/users/{userId}", USER1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
 
     @Test
     void testGetUserByUsername() throws Exception {
