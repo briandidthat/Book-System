@@ -104,6 +104,18 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testGetReviewByIdWithInvalidId() throws Exception {
+        when(repository.findById(REVIEW2.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(get("/reviews/{reviewId}", REVIEW2.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByBookId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
