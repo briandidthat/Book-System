@@ -142,6 +142,20 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testUpdateReviewWithInvalidPathId() throws Exception {
+        String inputJson = mapper.writeValueAsString(REVIEW1);
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.of(REVIEW1));
+
+        this.mockMvc.perform(put("/reviews/{reviewId}", 5)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("Path id must match review object id.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByBookId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
@@ -169,6 +183,9 @@ class ReviewControllerTest {
                         result.getResolvedException().getMessage()))
                 .andDo(print());
     }
+
+
+
 
     @Test
     void testGetReviewsByUserId() throws Exception {
