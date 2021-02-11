@@ -17,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,6 +87,17 @@ class UserControllerTest {
                 .content(inputJson))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUserById() throws Exception {
+        String outputJson = mapper.writeValueAsString(USER2);
+        when(repository.findById(USER2.getId())).thenReturn(Optional.of(USER2));
+
+        this.mockMvc.perform(get("/users/{userId}", USER2.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
                 .andDo(print());
     }
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -26,6 +27,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@RequestBody @Valid User user) {
         return repository.save(user);
+    }
+
+    @GetMapping("/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUserById(@PathVariable Integer userId) {
+        Optional<User> user = repository.findById(userId);
+
+        return user.orElseThrow(() -> new ResourceNotFoundException("There is no user associated with the id provided."));
     }
 
     @GetMapping("/username/{username}")
