@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -98,6 +99,18 @@ class UserControllerTest {
         this.mockMvc.perform(get("/users/{userId}", USER2.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUserByIdWithInvalidId() throws Exception {
+        when(repository.findById(USER2.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(get("/users/{userId}", USER2.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the id provided.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 
