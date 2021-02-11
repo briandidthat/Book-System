@@ -156,6 +156,30 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testDeleteReview() throws Exception {
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.of(REVIEW1));
+        doNothing().when(repository).delete(REVIEW1);
+
+        this.mockMvc.perform(delete("/reviews/{reviewId}", REVIEW1.getId()))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+                .andDo(print());
+    }
+
+    @Test
+    void testDeleteReviewWithInvalidId() throws Exception {
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.empty());
+        doNothing().when(repository).delete(REVIEW1);
+
+        this.mockMvc.perform(delete("/reviews/{reviewId}", REVIEW1.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByBookId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
@@ -183,9 +207,6 @@ class ReviewControllerTest {
                         result.getResolvedException().getMessage()))
                 .andDo(print());
     }
-
-
-
 
     @Test
     void testGetReviewsByUserId() throws Exception {

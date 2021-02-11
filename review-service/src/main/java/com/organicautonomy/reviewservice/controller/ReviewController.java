@@ -54,6 +54,18 @@ public class ReviewController {
         repository.save(review);
     }
 
+    @DeleteMapping("/{reviewId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReview(@PathVariable Integer reviewId) {
+        Optional<Review> review = repository.findById(reviewId);
+
+        if (!review.isPresent()) {
+            throw new ResourceNotFoundException("There are no reviews associated with the id provided.");
+        }
+        // if we successfully arrive here, the object exists in db and we can safely delete it.
+        repository.delete(review.get());
+    }
+
     @GetMapping("/books/{bookId}")
     @ResponseStatus(HttpStatus.OK)
     public List<Review> getReviewsByBookId(@PathVariable Integer bookId) {
