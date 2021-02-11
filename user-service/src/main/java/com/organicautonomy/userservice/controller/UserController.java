@@ -37,6 +37,23 @@ public class UserController {
         return user.orElseThrow(() -> new ResourceNotFoundException("There is no user associated with the id provided."));
     }
 
+    @PutMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUser(@PathVariable Integer userId, @RequestBody @Valid User user) {
+        if (!user.getId().equals(userId)) {
+            throw new IllegalArgumentException("Path id must match object id.");
+        }
+
+        Optional<User> compare = repository.findById(userId);
+
+        if (!compare.isPresent()) {
+            throw new ResourceNotFoundException("There is no user associated with the id provided.");
+        }
+
+        // if we successfully arrive here, path and object id match and the user exists in db.
+        repository.save(user);
+    }
+
     @GetMapping("/username/{username}")
     @ResponseStatus(HttpStatus.OK)
     public User getUserByUsername(@PathVariable String username) {

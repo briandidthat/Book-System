@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +22,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -113,6 +111,20 @@ class UserControllerTest {
                         result.getResolvedException().getMessage()))
                 .andDo(print());
     }
+
+    @Test
+    void testUpdateUser() throws Exception {
+        String inputJson = mapper.writeValueAsString(USER1);
+        when(repository.findById(USER1.getId())).thenReturn(Optional.of(USER1));
+
+        this.mockMvc.perform(put("/users/{userId}", USER1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+                .andDo(print());
+    }
+
 
     @Test
     void testGetUserByUsername() throws Exception {
