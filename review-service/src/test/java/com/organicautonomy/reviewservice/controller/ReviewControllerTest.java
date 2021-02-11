@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -87,6 +88,18 @@ class ReviewControllerTest {
                 .content(inputJson))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetReviewById() throws Exception {
+        String outputJson = mapper.writeValueAsString(REVIEW2);
+
+        when(repository.findById(REVIEW2.getId())).thenReturn(Optional.of(REVIEW2));
+
+        this.mockMvc.perform(get("/reviews/{reviewId}", REVIEW2.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
                 .andDo(print());
     }
 

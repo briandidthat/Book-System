@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/reviews")
@@ -26,6 +27,14 @@ public class ReviewController {
     @ResponseStatus(HttpStatus.CREATED)
     public Review createReview(@RequestBody @Valid Review review) {
         return repository.save(review);
+    }
+
+    @GetMapping("/{reviewId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Review getReviewByBookId(@PathVariable Integer reviewId) {
+        Optional<Review> review = repository.findById(reviewId);
+
+        return review.orElseThrow(() -> new ResourceNotFoundException("There are no reviews associated with the id provided."));
     }
 
     @GetMapping("/books/{bookId}")
