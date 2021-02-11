@@ -22,9 +22,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -113,6 +113,18 @@ class ReviewControllerTest {
                 .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
                         result.getResolvedException().getMessage()))
                 .andDo(print());
+    }
+
+    @Test
+    void testUpdateReview() throws Exception {
+        String inputJson = mapper.writeValueAsString(REVIEW1);
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.of(REVIEW1));
+
+        this.mockMvc.perform(put("/reviews/{reviewId}", REVIEW1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
     }
 
     @Test

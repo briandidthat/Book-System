@@ -37,6 +37,23 @@ public class ReviewController {
         return review.orElseThrow(() -> new ResourceNotFoundException("There are no reviews associated with the id provided."));
     }
 
+    @PutMapping("/{reviewId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateReview(@PathVariable Integer reviewId, @RequestBody @Valid Review review) {
+        if (!reviewId.equals(review.getBookId())) {
+            throw new IllegalArgumentException("Path id must match review object id.");
+        }
+
+        Optional<Review> compare = repository.findById(reviewId);
+
+        if (!compare.isPresent()) {
+            throw new ResourceNotFoundException("There are no reviews associated with the id provided.");
+        }
+
+        // if we successfully arrive here, the path and object have same id and object exists in db.
+        repository.save(review);
+    }
+
     @GetMapping("/books/{bookId}")
     @ResponseStatus(HttpStatus.OK)
     public List<Review> getReviewsByBookId(@PathVariable Integer bookId) {
