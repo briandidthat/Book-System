@@ -31,7 +31,7 @@ public class ReviewController {
 
     @GetMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
-    public Review getReviewByBookId(@PathVariable Integer reviewId) {
+    public Review getReviewById(@PathVariable Integer reviewId) {
         Optional<Review> review = repository.findById(reviewId);
 
         return review.orElseThrow(() -> new ResourceNotFoundException("There are no reviews associated with the id provided."));
@@ -60,7 +60,7 @@ public class ReviewController {
         List<Review> reviews = repository.findReviewsByBookId(bookId);
 
         if (reviews.size() == 0) {
-            throw new ResourceNotFoundException("There are no books associated with the id provided.");
+            throw new ResourceNotFoundException("There are no reviews associated with the book id provided.");
         }
 
         return reviews;

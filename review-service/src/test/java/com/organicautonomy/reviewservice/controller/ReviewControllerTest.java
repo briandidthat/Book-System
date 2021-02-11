@@ -128,6 +128,20 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testUpdateReviewWithInvalidId() throws Exception {
+        String inputJson = mapper.writeValueAsString(REVIEW1);
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(put("/reviews/{reviewId}", REVIEW1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByBookId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
@@ -151,7 +165,7 @@ class ReviewControllerTest {
         this.mockMvc.perform(get("/reviews/books/{bookId}", 2))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("There are no books associated with the id provided.",
+                .andExpect(result -> assertEquals("There are no reviews associated with the book id provided.",
                         result.getResolvedException().getMessage()))
                 .andDo(print());
     }
