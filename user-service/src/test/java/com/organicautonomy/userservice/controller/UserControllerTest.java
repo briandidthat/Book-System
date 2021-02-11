@@ -17,12 +17,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,6 +86,72 @@ class UserControllerTest {
                 .content(inputJson))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUserById() throws Exception {
+        String outputJson = mapper.writeValueAsString(USER2);
+        when(repository.findById(USER2.getId())).thenReturn(Optional.of(USER2));
+
+        this.mockMvc.perform(get("/users/{userId}", USER2.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetUserByIdWithInvalidId() throws Exception {
+        when(repository.findById(USER2.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(get("/users/{userId}", USER2.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testUpdateUser() throws Exception {
+        String inputJson = mapper.writeValueAsString(USER1);
+        when(repository.findById(USER1.getId())).thenReturn(Optional.of(USER1));
+
+        this.mockMvc.perform(put("/users/{userId}", USER1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+                .andDo(print());
+    }
+
+    @Test
+    void testUpdateUserWithInvalidId() throws Exception {
+        String inputJson = mapper.writeValueAsString(USER1);
+        when(repository.findById(USER1.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(put("/users/{userId}", USER1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There is no user associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testUpdateUserWithInvalidPathId() throws Exception {
+        String inputJson = mapper.writeValueAsString(USER1);
+        when(repository.findById(USER1.getId())).thenReturn(Optional.of(USER1));
+
+        this.mockMvc.perform(put("/users/{userId}", 3)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("The user id in the path must match user object id in body.",
+                        result.getResolvedException().getMessage()))
                 .andDo(print());
     }
 
