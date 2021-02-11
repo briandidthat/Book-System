@@ -41,7 +41,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateUser(@PathVariable Integer userId, @RequestBody @Valid User user) {
         if (!user.getId().equals(userId)) {
-            throw new IllegalArgumentException("Path id must match object id.");
+            throw new IllegalArgumentException("The user id in the path must match user object id in body.");
         }
 
         Optional<User> compare = repository.findById(userId);

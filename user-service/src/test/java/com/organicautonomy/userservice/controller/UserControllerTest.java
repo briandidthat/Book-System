@@ -141,6 +141,21 @@ class UserControllerTest {
     }
 
     @Test
+    void testUpdateUserWithInvalidPathId() throws Exception {
+        String inputJson = mapper.writeValueAsString(USER1);
+        when(repository.findById(USER1.getId())).thenReturn(Optional.of(USER1));
+
+        this.mockMvc.perform(put("/users/{userId}", 3)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("The user id in the path must match user object id in body.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetUserByUsername() throws Exception {
         String outputJson = mapper.writeValueAsString(USER2);
 
