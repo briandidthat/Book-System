@@ -18,12 +18,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,6 +92,94 @@ class ReviewControllerTest {
     }
 
     @Test
+    void testGetReviewById() throws Exception {
+        String outputJson = mapper.writeValueAsString(REVIEW2);
+
+        when(repository.findById(REVIEW2.getId())).thenReturn(Optional.of(REVIEW2));
+
+        this.mockMvc.perform(get("/reviews/{reviewId}", REVIEW2.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().json(outputJson))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetReviewByIdWithInvalidId() throws Exception {
+        when(repository.findById(REVIEW2.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(get("/reviews/{reviewId}", REVIEW2.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testUpdateReview() throws Exception {
+        String inputJson = mapper.writeValueAsString(REVIEW1);
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.of(REVIEW1));
+
+        this.mockMvc.perform(put("/reviews/{reviewId}", REVIEW1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void testUpdateReviewWithInvalidId() throws Exception {
+        String inputJson = mapper.writeValueAsString(REVIEW1);
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(put("/reviews/{reviewId}", REVIEW1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testUpdateReviewWithInvalidPathId() throws Exception {
+        String inputJson = mapper.writeValueAsString(REVIEW1);
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.of(REVIEW1));
+
+        this.mockMvc.perform(put("/reviews/{reviewId}", 5)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(inputJson))
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof IllegalArgumentException))
+                .andExpect(result -> assertEquals("Path id must match review object id.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    void testDeleteReview() throws Exception {
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.of(REVIEW1));
+        doNothing().when(repository).delete(REVIEW1);
+
+        this.mockMvc.perform(delete("/reviews/{reviewId}", REVIEW1.getId()))
+                .andExpect(status().isNoContent())
+                .andExpect(content().string(""))
+                .andDo(print());
+    }
+
+    @Test
+    void testDeleteReviewWithInvalidId() throws Exception {
+        when(repository.findById(REVIEW1.getId())).thenReturn(Optional.empty());
+        doNothing().when(repository).delete(REVIEW1);
+
+        this.mockMvc.perform(delete("/reviews/{reviewId}", REVIEW1.getId()))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
+                .andExpect(result -> assertEquals("There are no reviews associated with the id provided.",
+                        result.getResolvedException().getMessage()))
+                .andDo(print());
+    }
+
+    @Test
     void testGetReviewsByBookId() throws Exception {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
@@ -114,7 +203,7 @@ class ReviewControllerTest {
         this.mockMvc.perform(get("/reviews/books/{bookId}", 2))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-                .andExpect(result -> assertEquals("There are no books associated with the id provided.",
+                .andExpect(result -> assertEquals("There are no reviews associated with the book id provided.",
                         result.getResolvedException().getMessage()))
                 .andDo(print());
     }
