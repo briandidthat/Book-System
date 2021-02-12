@@ -56,6 +56,9 @@ class BookClientTest {
     void getBookById() {
         when(bookClient.getBookById(HOLES.getId())).thenReturn(HOLES);
 
+        Book fromClient = bookClient.getBookById(HOLES.getId());
+
+        assertEquals(HOLES, fromClient);
     }
 
     @Test
