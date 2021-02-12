@@ -23,10 +23,9 @@ class BookClientTest {
     public final Book TO_SAVE = new Book("Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
     public final Book HOLES = new Book(1, "Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
     public final Book THE_PRINCE = new Book(2,"The Prince", "Louis Sachar", LocalDate.of(1999, 12, 1));
-    public final Book INVALID = new Book();
 
     @MockBean
-    private BookClient bookClient;
+    private BookClient client;
 
     @BeforeEach
     void setUp() {
@@ -34,9 +33,9 @@ class BookClientTest {
 
     @Test
     void createBook() {
-        when(bookClient.createBook(TO_SAVE)).thenReturn(HOLES);
+        when(client.createBook(TO_SAVE)).thenReturn(HOLES);
 
-        Book book = bookClient.createBook(TO_SAVE);
+        Book book = client.createBook(TO_SAVE);
         assertEquals(book, HOLES);
     }
 
@@ -46,41 +45,42 @@ class BookClientTest {
         books.add(HOLES);
         books.add(THE_PRINCE);
 
-        when(bookClient.getAllBooks()).thenReturn(books);
+        when(client.getAllBooks()).thenReturn(books);
 
-        List<Book> fromClient = bookClient.getAllBooks();
+        List<Book> fromClient = client.getAllBooks();
         assertEquals(2, fromClient.size());
     }
 
     @Test
     void getBookById() {
-        when(bookClient.getBookById(HOLES.getId())).thenReturn(HOLES);
+        when(client.getBookById(HOLES.getId())).thenReturn(HOLES);
 
-        Book fromClient = bookClient.getBookById(HOLES.getId());
+        Book fromClient = client.getBookById(HOLES.getId());
 
         assertEquals(HOLES, fromClient);
     }
 
     @Test
     void updateBook() {
-        doNothing().when(bookClient).updateBook(THE_PRINCE.getId(), THE_PRINCE);
+        doNothing().when(client).updateBook(THE_PRINCE.getId(), THE_PRINCE);
     }
 
     @Test
     void deleteBook() {
-        doNothing().when(bookClient).deleteBook(THE_PRINCE.getId());
+        doNothing().when(client).deleteBook(THE_PRINCE.getId());
     }
 
     @Test
     void getBookByTitle() {
-        when(bookClient.getBookByTitle(HOLES.getTitle())).thenReturn(HOLES);
+        when(client.getBookByTitle(HOLES.getTitle())).thenReturn(HOLES);
     }
 
     @Test
     void getBooksByReleaseDate() {
         List<Book> books = new ArrayList<>();
         books.add(THE_PRINCE);
-        when(bookClient.getBooksByReleaseDate(THE_PRINCE.getReleaseDate())).thenReturn(books);
+
+        when(client.getBooksByReleaseDate(THE_PRINCE.getReleaseDate())).thenReturn(books);
     }
 
     @Test
@@ -88,6 +88,6 @@ class BookClientTest {
         List<Book> books = new ArrayList<>();
         books.add(HOLES);
 
-        when(bookClient.getBooksByAuthor(HOLES.getAuthor())).thenReturn(books);
+        when(client.getBooksByAuthor(HOLES.getAuthor())).thenReturn(books);
     }
 }
