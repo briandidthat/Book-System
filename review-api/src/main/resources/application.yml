@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: review-api
+
+eureka:
+  client:
+    enabled: false
