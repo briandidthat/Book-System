@@ -48,7 +48,8 @@ class BookClientTest {
 
         when(bookClient.getAllBooks()).thenReturn(books);
 
-
+        List<Book> fromClient = bookClient.getAllBooks();
+        assertEquals(2, fromClient.size());
     }
 
     @Test
