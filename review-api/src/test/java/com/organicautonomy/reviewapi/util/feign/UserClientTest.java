@@ -32,6 +32,10 @@ class UserClientTest {
     @Test
     void createUser() {
         when(client.createUser(TO_SAVE)).thenReturn(USER1);
+
+        User user = client.createUser(TO_SAVE);
+
+        assertEquals(USER1, user);
     }
 
     @Test
@@ -42,30 +46,51 @@ class UserClientTest {
 
         when(client.getAllUsers()).thenReturn(users);
 
+        List<User> fromClient = client.getAllUsers();
+
+        assertEquals(2, fromClient.size());
     }
 
     @Test
     void getUserById() {
         when(client.getUserById(USER1.getId())).thenReturn(USER1);
+
+        User fromClient = client.getUserById(USER1.getId());
+        assertEquals(USER1, fromClient);
     }
 
     @Test
     void updateUser() {
-        doNothing().when(client).updateUser(USER1.getId(), USER1);
+        User user = new User(1, "brooke", "brooke@gmail.com");
+        user.setUsername("brookGME");
+
+        doNothing().when(client).updateUser(USER1.getId(), user);
+
+        client.updateUser(user.getId(), user);
     }
 
     @Test
     void deleteUser() {
         doNothing().when(client).deleteUser(USER2.getId());
+
+        client.deleteUser(USER2.getId());
     }
 
     @Test
     void getUserByUsername() {
         when(client.getUserByUsername(USER2.getUsername())).thenReturn(USER2);
+
+        User user = client.getUserByUsername(USER2.getUsername());
+
+        assertEquals(USER2, user);
     }
 
     @Test
     void getUserByEmail() {
         when(client.getUserByEmail(USER1.getEmail())).thenReturn(USER1);
+
+        User user = client.getUserByEmail(USER1.getEmail());
+
+        assertEquals(USER1, user);
     }
 }

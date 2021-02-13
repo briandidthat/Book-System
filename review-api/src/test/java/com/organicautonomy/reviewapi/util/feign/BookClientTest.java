@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -58,16 +57,6 @@ class BookClientTest {
         Book fromClient = client.getBookById(HOLES.getId());
 
         assertEquals(HOLES, fromClient);
-    }
-
-    @Test
-    void updateBook() {
-        doNothing().when(client).updateBook(THE_PRINCE.getId(), THE_PRINCE);
-    }
-
-    @Test
-    void deleteBook() {
-        doNothing().when(client).deleteBook(THE_PRINCE.getId());
     }
 
     @Test
