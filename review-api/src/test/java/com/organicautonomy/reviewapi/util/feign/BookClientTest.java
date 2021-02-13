@@ -77,7 +77,6 @@ class BookClientTest {
         Book book = client.getBookByTitle(HOLES.getTitle());
 
         assertEquals(HOLES, book);
-
     }
 
     @Test
@@ -86,6 +85,10 @@ class BookClientTest {
         books.add(THE_PRINCE);
 
         when(client.getBooksByReleaseDate(THE_PRINCE.getReleaseDate())).thenReturn(books);
+
+        List<Book> fromClient = client.getBooksByReleaseDate(THE_PRINCE.getReleaseDate());
+
+        assertEquals(1, fromClient.size());
     }
 
     @Test
@@ -94,5 +97,9 @@ class BookClientTest {
         books.add(HOLES);
 
         when(client.getBooksByAuthor(HOLES.getAuthor())).thenReturn(books);
+
+        List<Book> fromClient = client.getBooksByAuthor(HOLES.getAuthor());
+
+        assertEquals(1, fromClient.size());
     }
 }
