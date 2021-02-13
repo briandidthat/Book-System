@@ -73,6 +73,11 @@ class BookClientTest {
     @Test
     void getBookByTitle() {
         when(client.getBookByTitle(HOLES.getTitle())).thenReturn(HOLES);
+
+        Book book = client.getBookByTitle(HOLES.getTitle());
+
+        assertEquals(HOLES, book);
+
     }
 
     @Test
