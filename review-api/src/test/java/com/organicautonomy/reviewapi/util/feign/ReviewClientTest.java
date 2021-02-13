@@ -8,7 +8,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -19,18 +22,34 @@ class ReviewClientTest {
     private final Review REVIEW2 = new Review(3,2, 12, new BigDecimal("4.5"), "Amazing.");
 
     @MockBean
-    private ReviewClient reviewClient;
+    private ReviewClient client;
 
     @Test
     void createReview() {
+        when(client.createReview(TO_SAVE)).thenReturn(REVIEW1);
+
+        Review fromClient = client.createReview(TO_SAVE);
+
+        assertEquals(REVIEW1, fromClient);
     }
 
     @Test
     void getAllReviews() {
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(REVIEW1);
+        reviews.add(REVIEW2);
+
+        when(client.getAllReviews()).thenReturn(reviews);
+
+        List<Review> fromClient = client.getAllReviews();
+        assertEquals(2, fromClient.size());
     }
 
     @Test
     void getReviewById() {
+        when(client.getReviewById(REVIEW1.getId())).thenReturn(REVIEW1);
+
+
     }
 
     @Test
