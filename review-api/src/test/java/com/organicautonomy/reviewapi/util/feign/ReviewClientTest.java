@@ -25,7 +25,7 @@ class ReviewClientTest {
     private ReviewClient client;
 
     @Test
-    void createReview() {
+    void testCreateReview() {
         when(client.createReview(TO_SAVE)).thenReturn(REVIEW1);
 
         Review fromClient = client.createReview(TO_SAVE);
@@ -34,7 +34,7 @@ class ReviewClientTest {
     }
 
     @Test
-    void getAllReviews() {
+    void testGetAllReviews() {
         List<Review> reviews = new ArrayList<>();
         reviews.add(REVIEW1);
         reviews.add(REVIEW2);
@@ -46,29 +46,31 @@ class ReviewClientTest {
     }
 
     @Test
-    void getReviewById() {
+    void testGetReviewById() {
         when(client.getReviewById(REVIEW1.getId())).thenReturn(REVIEW1);
 
+        Review fromClient = client.getReviewById(REVIEW1.getId());
 
+        assertEquals(REVIEW1, fromClient);
     }
 
     @Test
-    void updateUser() {
+    void testUpdateUser() {
     }
 
     @Test
-    void deleteUser() {
+    void testDeleteUser() {
     }
 
     @Test
-    void getReviewsByBookId() {
+    void testGetReviewsByBookId() {
     }
 
     @Test
-    void getReviewsByUserID() {
+    void testGetReviewsByUserID() {
     }
 
     @Test
-    void getReviewsByRating() {
+    void testGetReviewsByRating() {
     }
 }
