@@ -30,7 +30,7 @@ class UserClientTest {
     }
 
     @Test
-    void createUser() {
+    void testCreateUser() {
         when(client.createUser(TO_SAVE)).thenReturn(USER1);
 
         User user = client.createUser(TO_SAVE);
@@ -39,7 +39,7 @@ class UserClientTest {
     }
 
     @Test
-    void getAllUsers() {
+    void testGetAllUsers() {
         List<User> users = new ArrayList<>();
         users.add(USER1);
         users.add(USER2);
@@ -52,7 +52,7 @@ class UserClientTest {
     }
 
     @Test
-    void getUserById() {
+    void testGetUserById() {
         when(client.getUserById(USER1.getId())).thenReturn(USER1);
 
         User fromClient = client.getUserById(USER1.getId());
@@ -60,7 +60,7 @@ class UserClientTest {
     }
 
     @Test
-    void updateUser() {
+    void testUpdateUser() {
         User user = new User(1, "brooke", "brooke@gmail.com");
         user.setUsername("brookGME");
 
@@ -70,14 +70,14 @@ class UserClientTest {
     }
 
     @Test
-    void deleteUser() {
+    void testDeleteUser() {
         doNothing().when(client).deleteUser(USER2.getId());
 
         client.deleteUser(USER2.getId());
     }
 
     @Test
-    void getUserByUsername() {
+    void testGetUserByUsername() {
         when(client.getUserByUsername(USER2.getUsername())).thenReturn(USER2);
 
         User user = client.getUserByUsername(USER2.getUsername());

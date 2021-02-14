@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,6 +21,7 @@ class ReviewClientTest {
     private final Review TO_SAVE = new Review(1, 10, new BigDecimal("2.4"), "Trash.");
     private final Review REVIEW1 = new Review(1,1, 10, new BigDecimal("2.4"), "Trash.");
     private final Review REVIEW2 = new Review(3,2, 12, new BigDecimal("4.5"), "Amazing.");
+    private final Review REVIEW3 = new Review(4,3, 12, new BigDecimal("2.3"), "No Good.");
 
     @MockBean
     private ReviewClient client;
@@ -55,19 +57,37 @@ class ReviewClientTest {
     }
 
     @Test
-    void testUpdateUser() {
+    void testUpdateReview() {
+        doNothing().when(client).updateReview(REVIEW2.getId(), REVIEW2);
     }
 
     @Test
-    void testDeleteUser() {
+    void testDeleteReview() {
+        doNothing().when(client).deleteReview(REVIEW1.getId());
     }
 
     @Test
     void testGetReviewsByBookId() {
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(REVIEW2);
+        reviews.add(REVIEW3);
+
+        when(client.getReviewsByBookId(REVIEW2.getBookId())).thenReturn(reviews);
+
+        List<Review> fromClient = client.getReviewsByBookId(REVIEW2.getBookId());
+
+        assertEquals(2, fromClient.size());
     }
 
     @Test
-    void testGetReviewsByUserID() {
+    void testGetReviewsByUserId() {
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(REVIEW1);
+
+        when(client.getReviewsByUserId(REVIEW1.getUserId())).thenReturn(reviews);
+
+        List<Review> fromClient = client.getReviewsByUserId(REVIEW1.getUserId());
+        assertEquals(1, fromClient.size());
     }
 
     @Test

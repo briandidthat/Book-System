@@ -31,7 +31,7 @@ class BookClientTest {
     }
 
     @Test
-    void createBook() {
+    void testCreateBook() {
         when(client.createBook(TO_SAVE)).thenReturn(HOLES);
 
         Book book = client.createBook(TO_SAVE);
@@ -39,7 +39,7 @@ class BookClientTest {
     }
 
     @Test
-    void getAllBooks() {
+    void testGetAllBooks() {
         List<Book> books = new ArrayList<>();
         books.add(HOLES);
         books.add(THE_PRINCE);
@@ -51,7 +51,7 @@ class BookClientTest {
     }
 
     @Test
-    void getBookById() {
+    void testGetBookById() {
         when(client.getBookById(HOLES.getId())).thenReturn(HOLES);
 
         Book fromClient = client.getBookById(HOLES.getId());
@@ -60,7 +60,7 @@ class BookClientTest {
     }
 
     @Test
-    void getBookByTitle() {
+    void testGetBookByTitle() {
         when(client.getBookByTitle(HOLES.getTitle())).thenReturn(HOLES);
 
         Book book = client.getBookByTitle(HOLES.getTitle());
@@ -69,7 +69,7 @@ class BookClientTest {
     }
 
     @Test
-    void getBooksByReleaseDate() {
+    void testGetBooksByReleaseDate() {
         List<Book> books = new ArrayList<>();
         books.add(THE_PRINCE);
 
@@ -81,7 +81,7 @@ class BookClientTest {
     }
 
     @Test
-    void getBooksByAuthor() {
+    void testGetBooksByAuthor() {
         List<Book> books = new ArrayList<>();
         books.add(HOLES);
 
