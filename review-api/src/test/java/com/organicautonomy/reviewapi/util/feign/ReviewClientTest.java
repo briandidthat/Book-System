@@ -92,5 +92,14 @@ class ReviewClientTest {
 
     @Test
     void testGetReviewsByRating() {
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(REVIEW1);
+        reviews.add(REVIEW2);
+
+        when(client.getReviewsByRating(2)).thenReturn(reviews);
+
+        List<Review> fromClient = client.getReviewsByRating(2);
+
+        assertEquals(2, fromClient.size());
     }
 }
