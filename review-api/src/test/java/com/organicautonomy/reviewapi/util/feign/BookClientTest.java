@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BookClientTest {
     public final Book TO_SAVE = new Book("Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
     public final Book HOLES = new Book(1, "Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
+    public final Book UPDATED = new Book(1, "Holes", "Louis Sachar", LocalDate.of(1998, 11, 2));
     public final Book THE_PRINCE = new Book(2,"The Prince", "Louis Sachar", LocalDate.of(1999, 12, 1));
 
     @MockBean
@@ -57,6 +59,18 @@ class BookClientTest {
         Book fromClient = client.getBookById(HOLES.getId());
 
         assertEquals(HOLES, fromClient);
+    }
+
+    @Test
+    void testUpdateBook() {
+        doNothing().when(client).updateBook(HOLES.getId(), UPDATED);
+
+        Book book = new Book(1, "Holes", "Louis Sachar", LocalDate.of(1998, 11, 1));
+        book.setReleaseDate(LocalDate.of(1998, 11, 2));
+
+        client.updateBook(book.getId(), book);
+
+        assertEquals(UPDATED, book);
     }
 
     @Test

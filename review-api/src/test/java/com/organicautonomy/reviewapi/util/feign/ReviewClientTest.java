@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReviewClientTest {
     private final Review TO_SAVE = new Review(1, 10, new BigDecimal("2.4"), "Trash.");
     private final Review REVIEW1 = new Review(1,1, 10, new BigDecimal("2.4"), "Trash.");
+    private final Review UPDATED = new Review(1,1, 10, new BigDecimal("3.4"), "I changed my mind. It's a little better now.");
     private final Review REVIEW2 = new Review(3,2, 12, new BigDecimal("4.5"), "Amazing.");
     private final Review REVIEW3 = new Review(4,3, 12, new BigDecimal("2.3"), "No Good.");
 
@@ -59,11 +60,21 @@ class ReviewClientTest {
     @Test
     void testUpdateReview() {
         doNothing().when(client).updateReview(REVIEW2.getId(), REVIEW2);
+
+        Review review = new Review(1,1, 10, new BigDecimal("2.4"), "Trash.");
+        review.setRating(new BigDecimal("3.4"));
+        review.setText("I changed my mind. It's a little better now.");
+
+        client.updateReview(review.getId(), review);
+
+        assertEquals(UPDATED, review);
     }
 
     @Test
     void testDeleteReview() {
         doNothing().when(client).deleteReview(REVIEW1.getId());
+
+        client.deleteReview(REVIEW1.getId());
     }
 
     @Test
